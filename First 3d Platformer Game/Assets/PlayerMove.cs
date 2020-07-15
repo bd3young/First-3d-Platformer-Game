@@ -19,6 +19,7 @@ public class PlayerMove : MonoBehaviour
     Vector3 velocity;
     bool isGrounded;
 
+    int JumpCount = 0;
     float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
 
@@ -29,6 +30,7 @@ public class PlayerMove : MonoBehaviour
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
+            JumpCount = 0;
         }
 
         float horizontal = Input.GetAxisRaw("Horizontal");
@@ -36,6 +38,17 @@ public class PlayerMove : MonoBehaviour
 
 
         Vector3 inputDirection = new Vector3(horizontal, 0, vertical).normalized;
+
+            if (Input.GetButtonDown("Jump") && JumpCount < 2)
+            {
+                velocity.y = Mathf.Sqrt(jumpheight * -2 * gravity);
+                JumpCount = JumpCount + 1;
+                
+            }
+
+            velocity.y += gravity * Time.deltaTime;
+
+            controller.Move(velocity * Time.deltaTime);
 
         if (inputDirection.magnitude >= 0.1f)
         {
@@ -46,14 +59,7 @@ public class PlayerMove : MonoBehaviour
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             controller.Move(moveDir.normalized * speed * Time.deltaTime);
 
-            if (Input.GetButtonDown("Jump") && isGrounded)
-            {
-                velocity.y = Mathf.Sqrt(jumpheight * -2 * gravity);
-            }
 
-            velocity.y += gravity * Time.deltaTime;
-
-            controller.Move(velocity * Time.deltaTime);
 
         }
 
